@@ -36,9 +36,13 @@ module Contributing
     attr_reader :employee_name
 
     def validate_consecutiveness_of!(period)
-      return unless most_recent_contribution = Contribution.where(employee_name: employee_name).sort_by(&:ends_on).last
+      most_recent_contribution = ReadModels::Contributions::Contribution.where(employee_name: employee_name)
+                                                                        .sort_by(&:ends_on)
+                                                                        .last
 
-      raise InconsecutivePeriodError unless period.starts_on > most_recent_contribution.ends_on
+      return unless most_recent_contribution.present?
+
+      raise InconsecutivePeriodError unless (period.starts_on > most_recent_contribution.ends_on)
     end
 
     def apply_contribution_created(event)

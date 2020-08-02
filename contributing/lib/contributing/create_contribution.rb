@@ -6,20 +6,23 @@ module Contributing
 
     def initialize(employee_name:, starts_on:, ends_on:, amount:, currency:)
       @employee_name = employee_name
-      @starts_on = starts_on
-      @ends_on = ends_on
+      @period = to_period(starts_on, ends_on)
       @money = to_money(amount, currency)
     end
 
-    attr_reader :starts_on, :ends_on, :money
+    attr_reader :period, :money
 
     def call
-      ContributionChain.new(employee_name: employee_name).create(command: self)
+      Contributing::ContributionChain.new(employee_name: employee_name).create(command: self)
     end
 
     private
 
     attr_reader :employee_name
+
+    def to_period(starts_on, ends_on)
+      Period.new(starts_on: starts_on, ends_on: ends_on)
+    end
 
     def to_money(amount, currency)
       Money.new(amount: amount, currency: currency)
