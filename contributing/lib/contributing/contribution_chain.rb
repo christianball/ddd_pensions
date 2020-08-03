@@ -4,7 +4,7 @@ module Contributing
   class ContributionChain
     include AggregateRoot
 
-    class NonConsecutivePeriodError < StandardError
+    class InconsecutivePeriodError < StandardError
       def message
         "A new contribution must begin after the employee's most recent existing contribution ends."
       end
@@ -16,19 +16,15 @@ module Contributing
       @ends_on = nil
       @amount = nil
       @currency = nil
+      @state = nil
     end
 
-    def create(command: command)
+    def create(command:)
       validate_consecutiveness_of!(command.period)
 
-      apply ContributionCreated.new(data: {
-        employee_name: employee_name,
-        starts_on: command.period.starts_on,
-        ends_on: command.period.ends_on,
-        amount: command.money.amount,
-        currency: command.money.currency,
-        level: 'signup'
-      })
+      apply ContributionCreated.new(
+        data: { employee_name: employee_name, period: command.period, money: command.money }
+      )
     end
 
     private
@@ -42,14 +38,14 @@ module Contributing
 
       return unless most_recent_contribution.present?
 
-      raise InconsecutivePeriodError unless (period.starts_on > most_recent_contribution.ends_on)
+      raise InconsecutivePeriodError unless (Date.parse(period.starts_on) > most_recent_contribution.ends_on)
     end
 
     def apply_contribution_created(event)
-      @starts_on = event.data[:starts_on]
-      @ends_on = event.data[:ends_on]
-      @amount = event.data[:amount]
-      @currency = event.data[:currency]
+      @starts_on = event.data[:period].starts_on
+      @ends_on = event.data[:period].ends_on
+      @amount = event.data[:money].amount
+      @currency = event.data[:money].currency
     end
 
   end
