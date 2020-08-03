@@ -1,24 +1,15 @@
-# README
+# DDD Pensions
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is my coursework for module 3 of the [Rails Architect MasterClass](https://railsarchitects.com/)
 
-Things you may want to cover:
+It demonstrates the following features:
 
-* Ruby version
+1. Event sourcing achieved with the gem [Rails Event Store](https://railseventstore.org/)
+2. A basic use of the CQRS architectural pattern
+3. Implementation of DDD concepts: "bounded context", "read model", "aggregate", "entity" and "value object"
 
-* System dependencies
+Usage:
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+    $ git clone https://github.com/christianball/ddd_pensions.git
+    $ bundle install
+    $ bundle exec rspec
